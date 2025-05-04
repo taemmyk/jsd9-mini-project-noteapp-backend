@@ -2,6 +2,7 @@ import chalk from "chalk";
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import errorHandler from "./middlewares/errorhandler.js";
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ app.use(express.json());
     process.exit(1);
   }
 })();
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${chalk.blue(`http://localhost:${PORT}`)}`);
