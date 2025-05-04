@@ -96,3 +96,43 @@ export const deleteNote = async (req, res, next) => {
     next(err);
   }
 };
+
+//? search note
+export const searchNote = async (req, res, next) => {
+  const { query, startDate, endDate } = req.body;
+  const filters = {};
+  if (!query) {
+    return res.status(400).json({ error: true, message: "Query is required" });
+  }
+  try {
+    filters.$or = [
+      { title: { $regex: query, $options: "i" } },
+      { content: { $regex: query, $options: "i" } },
+    ];
+
+    if (startDate && endDate) {
+      filters.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    } else if (startDate) {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+      };
+    } else if (endDate) {
+      filters.createdAt = { $lte: new Date(endDate) };
+    }
+
+    const searchResults = await Note.find(filters).sort({ createdAt: -1 });
+    const dataObj = searchResults.map((note) => ({
+      id: note._id,
+      title: note.title,
+      content: note.content,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    }));
+    res.status(200).json({ error: false, dataObj });
+  } catch (err) {
+    next(err);
+  }
+};
