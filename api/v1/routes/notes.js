@@ -1,10 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
-import { getAllNotes } from "../controllers/notesController.js";
-import { Note } from "../../../models/Note.js";
+import { getAllNotes, createNewNote } from "../controllers/notesController.js";
 
 const router = express.Router();
 
 router.get("/", getAllNotes);
+router.post("/", createNewNote);
 
 export default router;

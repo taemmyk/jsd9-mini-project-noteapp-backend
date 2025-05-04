@@ -9,3 +9,25 @@ export const getAllNotes = async (req, res, next) => {
     next(err);
   }
 };
+
+//? create a new note
+export const createNewNote = async (req, res, next) => {
+  const { title, content, userId } = req.body;
+  try {
+    if (!title || !content || !userId) {
+      return res.status(400).json({
+        error: true,
+        message: "Title, content and user ID are required",
+      });
+    }
+
+    const note = await Note.create({
+      title,
+      content,
+      userId,
+    });
+    res.status(201).json(note);
+  } catch (err) {
+    next(err);
+  }
+};
