@@ -12,7 +12,7 @@ export const getAllNotes = async (req, res, next) => {
 
 //? create a new note
 export const createNewNote = async (req, res, next) => {
-  const { title, content, userId } = req.body;
+  const { title, content, tags = [], isPinned = false, userId } = req.body;
   try {
     if (!title || !content || !userId) {
       return res.status(400).json({
@@ -24,6 +24,8 @@ export const createNewNote = async (req, res, next) => {
     const note = await Note.create({
       title,
       content,
+      tags,
+      isPinned,
       userId,
     });
     res.status(201).json({ error: false, note });
@@ -35,9 +37,9 @@ export const createNewNote = async (req, res, next) => {
 //? edit a note by a specific id
 export const updateNote = async (req, res, next) => {
   const { id } = req.params;
-  const { title, content, userId } = req.body;
+  const { title, content, tags = [], isPinned = false } = req.body;
   try {
-    if (!title || !content || !userId) {
+    if (!title || !content) {
       return res.status(400).json({
         error: true,
         message: "Title, content and user ID are required",
@@ -54,7 +56,7 @@ export const updateNote = async (req, res, next) => {
 
     const updateNoteResult = await Note.updateOne(
       { _id: id },
-      { title, content, userId, updatedAt: new Date().getTime() }
+      { title, content, tags, isPinned, updatedAt: new Date().getTime() }
     );
 
     if (updateNoteResult.modifiedCount > 0) {
