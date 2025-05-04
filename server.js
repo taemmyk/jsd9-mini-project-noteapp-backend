@@ -2,6 +2,7 @@ import chalk from "chalk";
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import routes from "./api/v1/routes.js";
 import errorHandler from "./middlewares/errorhandler.js";
 
 dotenv.config();
@@ -20,6 +21,8 @@ app.use(express.json());
     process.exit(1);
   }
 })();
+
+app.use("/mongo", routes());
 
 app.use(errorHandler);
 
