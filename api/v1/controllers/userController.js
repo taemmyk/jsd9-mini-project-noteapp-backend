@@ -48,19 +48,71 @@ export const logUserIn = async (req, res, next) => {
         .json({ error: true, message: "Invalid credentials" });
     }
 
-    res.status(200).json({ error: false, message: "Logged in successfully" });
+    // res.status(200).json({ error: false, message: "Logged in successfully" });
 
-    // const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    //   expiresIn: "1h",
-    // });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
-    // res
-    //   .status(200)
-    //   .json({ error: false, message: "Logged in successfully", token });
+    res
+      .status(200)
+      .json({ error: false, message: "Logged in successfully", token });
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1hr
+    });
+
+    res.status(200).json({
+      error: false,
+      message: "Logged in successfully",
+      user: { _id: user_id, username: user.username },
+    });
   } catch (err) {
     next(err);
   }
 };
 
-//TODO: sign out
-export const logUserOut = async (req, res, next) => {};
+//? sign out
+export const logUserOut = async (req, res, next) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
+  res.status(200).json({ error: false, message: "Logged out successfully" });
+};
+
+//? verify token
+export const verifyToken = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: true, message: "Token is required" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({
+      error: false,
+      userId: decoded.user.id,
+      message: "Token is valid",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? get profile
+export const getProfile = async (req, res, next) => {
+  const user = await User.findById(req.user.user._id).select("-password");
+  if (!user) {
+    return res.status(404).json({ error: true, message: "User not found" });
+  }
+
+  res.status(200).json({ error: false, user });
+};
