@@ -1,4 +1,5 @@
 import { User } from "../../../models/User.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 //? register a new user
@@ -71,7 +72,7 @@ export const logUserIn = async (req, res, next) => {
     res.status(200).json({
       error: false,
       message: "Logged in successfully",
-      user: { _id: user_id, username: user.username },
+      user: { _id: user._id, username: user.username },
     });
   } catch (err) {
     next(err);
