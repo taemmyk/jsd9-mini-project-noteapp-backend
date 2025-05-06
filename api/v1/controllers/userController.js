@@ -54,9 +54,9 @@ export const logUserIn = async (req, res, next) => {
       expiresIn: "1h",
     });
 
-    res
-      .status(200)
-      .json({ error: false, message: "Logged in successfully", token });
+    // res
+    //   .status(200)
+    //   .json({ error: false, message: "Logged in successfully", token });
 
     const isProd = process.env.NODE_ENV === "production";
 

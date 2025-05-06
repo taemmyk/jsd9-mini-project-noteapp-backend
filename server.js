@@ -4,11 +4,16 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import routes from "./api/v1/routes.js";
+import limiter from "./middlewares/rateLimiter.js";
+import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorhandler.js";
 
 dotenv.config();
 
 const app = express();
+
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 3001;
 
 app.use(
@@ -19,7 +24,11 @@ app.use(
   })
 );
 
+app.use(limiter);
+
 app.use(express.json());
+
+app.use(cookieParser());
 
 (async () => {
   try {
