@@ -61,7 +61,91 @@ export const updateNote = async (req, res, next) => {
 
     if (updateNoteResult.modifiedCount > 0) {
       const updatedNote = await Note.findById(id);
-      res.status(200).json({ error: false, updatedNote });
+      res.status(200).json({
+        error: false,
+        message: "Note updated successfully",
+        updatedNote,
+      });
+    } else {
+      res
+        .status(200)
+        .json({ error: false, message: "No changes made to the note" });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? update a note's pin
+export const togglePin = async (req, res, next) => {
+  const { id } = req.params;
+  const { isPinned } = req.body;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Note Id is required" });
+  }
+
+  try {
+    const targetNote = await Note.findById(id);
+    if (!targetNote) {
+      return res.status(404).json({ error: true, message: "Note not found" });
+    }
+
+    const updatedPin = !targetNote.isPinned;
+    const updateNoteResult = await Note.updateOne(
+      { _id: id },
+      { isPinned: updatedPin, updatedAt: new Date().getTime() }
+    );
+
+    if (updateNoteResult.modifiedCount > 0) {
+      const updatedNote = await Note.findById(id);
+      res.status(200).json({
+        error: false,
+        message: "Note updated successfully",
+        updatedNote,
+      });
+    } else {
+      res
+        .status(200)
+        .json({ error: false, message: "No changes made to the note" });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? update a note's visibility
+export const togglePublic = async (req, res, next) => {
+  const { id } = req.params;
+  const { isPublic } = req.body;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Note Id is required" });
+  }
+
+  try {
+    const targetNote = await Note.findById(id);
+    if (!targetNote) {
+      return res.status(404).json({ error: true, message: "Note not found" });
+    }
+
+    const updatedPublic = !targetNote.isPublic;
+    const updateNoteResult = await Note.updateOne(
+      { _id: id },
+      { isPublic: updatedPublic, updatedAt: new Date().getTime() }
+    );
+
+    if (updateNoteResult.modifiedCount > 0) {
+      const updatedNote = await Note.findById(id);
+      res.status(200).json({
+        error: false,
+        message: "Note updated successfully",
+        updatedNote,
+      });
     } else {
       res
         .status(200)

@@ -5,6 +5,7 @@ export const NoteSchema = new Schema({
   content: { type: String, required: true },
   tags: { type: [String], default: [] },
   isPinned: { type: Boolean, default: false },
+  isPublic: { type: Boolean, default: false },
   createdAt: { type: Date, default: new Date().getTime() },
   updatedAt: { type: Date, default: new Date().getTime() },
 });
