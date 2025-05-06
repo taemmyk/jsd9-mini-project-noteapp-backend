@@ -3,8 +3,34 @@ import { Note } from "../../../models/Note.js";
 //? get all notes
 export const getAllNotes = async (req, res, next) => {
   try {
-    const notes = await Note.find().sort({ createdAt: -1 });
+    const notes = await Note.find().sort({ updatedAt: -1 });
     res.status(200).json({ error: false, notes });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? get public notes from a specific id
+export const getPublicNotesById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const publicNotes = await Note.find({ userId: id, isPublic: true }).sort({
+      updatedAt: -1,
+    });
+    res.status(200).json({ error: false, id, publicNotes });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? get all notes from a specific id
+export const getNotesByMe = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const publicNotes = await Note.find({ userId: id }).sort({
+      updatedAt: -1,
+    });
+    res.status(200).json({ error: false, publicNotes });
   } catch (err) {
     next(err);
   }
@@ -35,7 +61,7 @@ export const createNewNote = async (req, res, next) => {
 };
 
 //? edit a note by a specific id
-export const updateNote = async (req, res, next) => {
+export const updateNoteById = async (req, res, next) => {
   const { id } = req.params;
   const { title, content, tags = [], isPinned = false } = req.body;
   try {
@@ -77,7 +103,7 @@ export const updateNote = async (req, res, next) => {
 };
 
 //? update a note's pin
-export const togglePin = async (req, res, next) => {
+export const togglePinById = async (req, res, next) => {
   const { id } = req.params;
   const { isPinned } = req.body;
 
@@ -117,7 +143,7 @@ export const togglePin = async (req, res, next) => {
 };
 
 //? update a note's visibility
-export const togglePublic = async (req, res, next) => {
+export const togglePublicById = async (req, res, next) => {
   const { id } = req.params;
   const { isPublic } = req.body;
 
@@ -157,7 +183,7 @@ export const togglePublic = async (req, res, next) => {
 };
 
 //? delete a note by a specific id
-export const deleteNote = async (req, res, next) => {
+export const deleteNoteById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const targetNote = await Note.findById(id);

@@ -1,13 +1,28 @@
 import express from "express";
-import { getAllNotes, createNewNote, updateNote, togglePin, togglePublic, deleteNote } from "../controllers/notesController.js";
+import {
+  getAllNotes,
+  getPublicNotesById,
+  getNotesByMe,
+  createNewNote,
+  updateNoteById,
+  togglePinById,
+  togglePublicById,
+  deleteNoteById,
+} from "../controllers/notesController.js";
+import { authUser } from "../../../middlewares/auth.js";
 
 const router = express.Router();
 
-router.get("/", getAllNotes);
+//? public route
+router.get("/public", getAllNotes);
+router.get("/public/:id", getPublicNotesById);
+
+//? protected route
+router.get("/:id", getNotesByMe);
 router.post("/", createNewNote);
-router.put("/:id", updateNote);
-router.put("/update-pin/:id", togglePin)
-router.put("/update-public/:id", togglePublic)
-router.delete("/:id", deleteNote);
+router.put("/:id", updateNoteById);
+router.put("/update-pin/:id", togglePinById);
+router.put("/update-public/:id", togglePublicById);
+router.delete("/:id", deleteNoteById);
 
 export default router;
