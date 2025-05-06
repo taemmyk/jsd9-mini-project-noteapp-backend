@@ -25,12 +25,12 @@ export const getPublicNotesById = async (req, res, next) => {
 
 //? ❌ get all notes from a specific id
 export const getNotesByMe = async (req, res, next) => {
-  const { id } = req.params;
+  const userId = req.user.user._id;
   try {
-    const publicNotes = await Note.find({ userId: id }).sort({
+    const notes = await Note.find({ userId }).sort({
       updatedAt: -1,
     });
-    res.status(200).json({ error: false, publicNotes });
+    res.status(200).json({ error: false, notes });
   } catch (err) {
     next(err);
   }
@@ -210,8 +210,9 @@ export const deleteNoteById = async (req, res, next) => {
 
 //? ❌ search note
 export const searchNote = async (req, res, next) => {
+  const userId = req.user.user._id;
   const { query, startDate, endDate } = req.body;
-  const filters = {};
+  const filters = { userId };
   if (!query) {
     return res.status(400).json({ error: true, message: "Query is required" });
   }
@@ -243,6 +244,47 @@ export const searchNote = async (req, res, next) => {
       updatedAt: note.updatedAt,
     }));
     res.status(200).json({ error: false, dataObj });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? ❌ tags for navigation
+export const getAllMyTags = async (req, res, next) => {
+  const userId = req.user.user._id;
+  try {
+    const notes = await Note.find({ userId }).sort({
+      updatedAt: -1,
+    });
+    const allTags = new Set();
+    notes.forEach((note) => {
+      if (note.tags) {
+        if (note.tags.length > 0) {
+          note.tags.forEach((tag) => {
+            allTags.add(tag);
+          });
+        }
+      }
+    });
+    const tagArr = Array.from(allTags);
+    res.status(200).json({ error: false, tags: tagArr });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//? ❌ get notes by me with tag filtered
+export const getNotesByMeTagFiltered = async (req, res, next) => {
+  const userId = req.user.user._id;
+  const { tag } = req.params;
+  if (!tag) {
+    return res.status(400).json({ error: true, message: "Tag is required" });
+  }
+  try {
+    const notes = await Note.find({ userId, tags: { $in: [tag] } }).sort({
+      updatedAt: -1,
+    });
+    return res.status(200).json({ error: false, notes });
   } catch (err) {
     next(err);
   }
