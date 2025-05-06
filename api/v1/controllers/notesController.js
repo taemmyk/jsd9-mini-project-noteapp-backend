@@ -208,7 +208,7 @@ export const deleteNoteById = async (req, res, next) => {
   }
 };
 
-//? ❌ search note
+//? ❌ search note from a specific id
 export const searchNote = async (req, res, next) => {
   const userId = req.user.user._id;
   const { query, startDate, endDate } = req.body;

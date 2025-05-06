@@ -1,9 +1,10 @@
 import { Note } from "../../../models/Note.js";
 
-//? get note report by date range
+//? ❌ get note report from a specific id by date range
 export const getNoteReport = async (req, res, next) => {
+  const userId = req.user.user._id;
   try {
-    const allNotes = await Note.find().sort({ createdAt: 1 });
+    const allNotes = await Note.find({ userId }).sort({ createdAt: 1 });
     if (!allNotes || allNotes.length === 0) {
       return res.status(200).json({
         totalNote: 0,
