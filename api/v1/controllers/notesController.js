@@ -38,7 +38,8 @@ export const getNotesByMe = async (req, res, next) => {
 
 //? ❌ create a new note
 export const createNewNote = async (req, res, next) => {
-  const { title, content, tags = [], isPinned = false, userId } = req.body;
+  const { title, content, tags = [], isPinned = false } = req.body;
+  const userId = req.user.user._id;
   try {
     if (!title || !content || !userId) {
       return res.status(400).json({
