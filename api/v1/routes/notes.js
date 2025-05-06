@@ -17,12 +17,12 @@ const router = express.Router();
 router.get("/public", getAllNotes);
 router.get("/public/:id", getPublicNotesById);
 
-//? protected route
-router.get("/:id", getNotesByMe);
-router.post("/", createNewNote);
-router.put("/:id", updateNoteById);
-router.put("/update-pin/:id", togglePinById);
-router.put("/update-public/:id", togglePublicById);
-router.delete("/:id", deleteNoteById);
+//? ❌ protected route
+router.get("/:id", authUser, getNotesByMe);
+router.post("/", authUser, createNewNote);
+router.put("/:id", authUser, updateNoteById);
+router.put("/update-pin/:id", authUser, togglePinById);
+router.put("/update-public/:id", authUser, togglePublicById);
+router.delete("/:id", authUser, deleteNoteById);
 
 export default router;

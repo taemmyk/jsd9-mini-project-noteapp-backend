@@ -1,6 +1,6 @@
 import { Note } from "../../../models/Note.js";
 
-//? get all notes
+//? PUBLIC get all notes
 export const getAllNotes = async (req, res, next) => {
   try {
     const notes = await Note.find().sort({ updatedAt: -1 });
@@ -10,7 +10,7 @@ export const getAllNotes = async (req, res, next) => {
   }
 };
 
-//? get public notes from a specific id
+//? PUBLIC get public notes from a specific id
 export const getPublicNotesById = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -23,7 +23,7 @@ export const getPublicNotesById = async (req, res, next) => {
   }
 };
 
-//? get all notes from a specific id
+//? ❌ get all notes from a specific id
 export const getNotesByMe = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -36,7 +36,7 @@ export const getNotesByMe = async (req, res, next) => {
   }
 };
 
-//? create a new note
+//? ❌ create a new note
 export const createNewNote = async (req, res, next) => {
   const { title, content, tags = [], isPinned = false, userId } = req.body;
   try {
@@ -60,7 +60,7 @@ export const createNewNote = async (req, res, next) => {
   }
 };
 
-//? edit a note by a specific id
+//? ❌ edit a note by a specific id
 export const updateNoteById = async (req, res, next) => {
   const { id } = req.params;
   const { title, content, tags = [], isPinned = false } = req.body;
@@ -102,7 +102,7 @@ export const updateNoteById = async (req, res, next) => {
   }
 };
 
-//? update a note's pin
+//? ❌ update a note's pin
 export const togglePinById = async (req, res, next) => {
   const { id } = req.params;
   const { isPinned } = req.body;
@@ -142,7 +142,7 @@ export const togglePinById = async (req, res, next) => {
   }
 };
 
-//? update a note's visibility
+//? ❌ update a note's visibility
 export const togglePublicById = async (req, res, next) => {
   const { id } = req.params;
   const { isPublic } = req.body;
@@ -182,7 +182,7 @@ export const togglePublicById = async (req, res, next) => {
   }
 };
 
-//? delete a note by a specific id
+//? ❌ delete a note by a specific id
 export const deleteNoteById = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -207,7 +207,7 @@ export const deleteNoteById = async (req, res, next) => {
   }
 };
 
-//? search note
+//? ❌ search note
 export const searchNote = async (req, res, next) => {
   const { query, startDate, endDate } = req.body;
   const filters = {};
