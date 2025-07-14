@@ -61,6 +61,14 @@ export const logUserIn = async (req, res, next) => {
 
     const isProd = process.env.NODE_ENV === "production";
 
+    // Set token in HttpOnly cookie
+    // res.cookie("accessToken", token, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "Strict", // helps prevent CSRF
+    //   path: "/",
+    //   maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
+    // });
     res.cookie("accessToken", token, {
       httpOnly: true,
       secure: isProd,
@@ -116,4 +124,35 @@ export const getProfile = async (req, res, next) => {
   }
 
   res.status(200).json({ error: false, user });
+};
+
+//? search user public notes
+export const searchUserNotes = async (req, res, next) => {
+  const { user } = req.user;
+  const { query } = req.query;
+
+  if (!query) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Search query is required" });
+  }
+
+  try {
+    const matchingNotes = await Note.find({
+      userId: user._id,
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } }, // Case-insensitive title match
+        { content: { $regex: new RegExp(query, "i") } }, // Case-insensitive content match
+        { tags: { $regex: new RegExp(query, "i") } },
+      ],
+    });
+
+    return res.json({
+      error: false,
+      notes: matchingNotes,
+      message: "Notes matching the search query retrieved successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
