@@ -3,7 +3,7 @@ import { Note } from "../../../models/Note.js";
 //? PUBLIC get all notes
 export const getAllNotes = async (req, res, next) => {
   try {
-    const notes = await Note.find().sort({ updatedAt: -1 });
+    const notes = await Note.find().sort({ isPinned: 1, updatedAt: -1 });
     res.status(200).json({ error: false, notes });
   } catch (err) {
     next(err);
@@ -197,9 +197,7 @@ export const deleteNoteById = async (req, res, next) => {
 
     const deleteResult = await Note.deleteOne({ _id: id });
     if (deleteResult.deletedCount > 0) {
-      res
-        .status(204)
-        .json({ error: false, message: "Delete note successfully" });
+      res.status(200).json({ error: false, message: "Delete note successfully" });
     } else {
       res.status(404).json({ error: true, message: "Note not found" });
     }
