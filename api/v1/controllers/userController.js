@@ -4,20 +4,20 @@ import bcrypt from "bcrypt";
 
 //? register a new user
 export const createNewUser = async (req, res, next) => {
-  const { name, username, password } = req.body;
-  if (!name || !username || !password) {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
     return res
       .status(400)
       .json({ error: true, message: "All fields are required" });
   }
   try {
-    const existingUsername = await User.findOne({ username: username });
-    if (existingUsername) {
+    const existingEmail = await User.findOne({ email: email });
+    if (existingEmail) {
       return res
         .status(409)
         .json({ error: true, message: "This email is already in use" });
     }
-    const user = new User({ name, username, password });
+    const user = new User({ name, email, password });
     await user.save();
     res
       .status(201)
@@ -29,14 +29,14 @@ export const createNewUser = async (req, res, next) => {
 
 //? sign in
 export const logUserIn = async (req, res, next) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { email, password } = req.body;
+  if (!email || !password) {
     return res
       .status(400)
       .json({ error: true, message: "Email and password are required" });
   }
   try {
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res
         .status(401)
@@ -80,7 +80,7 @@ export const logUserIn = async (req, res, next) => {
     res.status(200).json({
       error: false,
       message: "Logged in successfully",
-      user: { _id: user._id, username: user.username },
+      user: { _id: user._id, email: user.email },
     });
   } catch (err) {
     next(err);
