@@ -156,3 +156,22 @@ export const searchUserNotes = async (req, res, next) => {
     next(error);
   }
 };
+
+//? check user when reloading
+export const checkAuth = async (req, res) => {
+  const token = req.cookies.accessToken;
+  if (!token) {
+    return res.status(401).json({ error: true, message: "Not logged in" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId).select("name email");
+    if (!user) {
+      return res.status(401).json({ error: true, message: "User not found" });
+    }
+    return res.status(200).json({ error: false, user });
+  } catch (err) {
+    return res.status(403).json({ error: true, message: "Invalid token" });
+  }
+};
