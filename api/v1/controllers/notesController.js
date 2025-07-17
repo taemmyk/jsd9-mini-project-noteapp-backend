@@ -65,7 +65,7 @@ export const createNewNote = async (req, res, next) => {
 //? ❌ edit a note by a specific id
 export const updateNoteById = async (req, res, next) => {
   const { id } = req.params;
-  const { title, content, tags = [], isPinned = false } = req.body;
+  const { title, content, tags = [] } = req.body;
   try {
     if (!title || !content) {
       return res.status(400).json({
@@ -84,7 +84,7 @@ export const updateNoteById = async (req, res, next) => {
 
     const updateNoteResult = await Note.updateOne(
       { _id: id },
-      { title, content, tags, isPinned, updatedAt: new Date().getTime() }
+      { title, content, tags, updatedAt: new Date().getTime() }
     );
 
     if (updateNoteResult.modifiedCount > 0) {
@@ -198,7 +198,9 @@ export const deleteNoteById = async (req, res, next) => {
 
     const deleteResult = await Note.deleteOne({ _id: id });
     if (deleteResult.deletedCount > 0) {
-      res.status(200).json({ error: false, message: "Delete note successfully" });
+      res
+        .status(200)
+        .json({ error: false, message: "Delete note successfully" });
     } else {
       res.status(404).json({ error: true, message: "Note not found" });
     }
@@ -250,24 +252,35 @@ export const searchNote = async (req, res, next) => {
 
 //? ❌ tags for navigation
 export const getAllMyTags = async (req, res, next) => {
-  const userId = req.user.user._id;
   try {
-    const notes = await Note.find({ userId }).sort({
-      updatedAt: -1,
-    });
+    const userId = req.user?.user?._id?.toString();
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ error: true, message: "User not authenticated" });
+    }
+
+    const notes = await Note.find({
+      userId,
+      tags: { $exists: true, $ne: [] },
+    }).select("tags");
+
     const allTags = new Set();
-    notes.forEach((note) => {
-      if (note.tags) {
-        if (note.tags.length > 0) {
-          note.tags.forEach((tag) => {
-            allTags.add(tag);
-          });
+
+    for (const note of notes) {
+      note.tags.forEach((tag) => {
+        if (typeof tag === "string" && tag.trim() !== "") {
+          allTags.add(tag.trim());
         }
-      }
-    });
+      });
+    }
+
     const tagArr = Array.from(allTags);
+
     res.status(200).json({ error: false, tags: tagArr });
   } catch (err) {
+    console.error("❌ Error fetching tags:", err);
     next(err);
   }
 };
