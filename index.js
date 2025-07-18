@@ -16,13 +16,6 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.set("trust proxy", 1);
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  })
-);
 
 app.use(helmet());
 const corsOptions = {
