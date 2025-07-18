@@ -19,7 +19,7 @@ app.set("trust proxy", 1);
 
 app.use(helmet());
 const corsOptions = {
-  origin: [process.env.CLIENT_URL],
+  origin: [process.env.CLIENT_URL, "https://jsd9-mini-project-scribbly.vercel.app"],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true, //this cookie
 };
