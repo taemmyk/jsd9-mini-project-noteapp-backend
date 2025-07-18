@@ -280,7 +280,6 @@ export const getAllMyTags = async (req, res, next) => {
 
     res.status(200).json({ error: false, tags: tagArr });
   } catch (err) {
-    console.error("❌ Error fetching tags:", err);
     next(err);
   }
 };
